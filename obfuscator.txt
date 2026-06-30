@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script>
         function _alert() {
-            alert("PHP Obfuscator By Mr.xBarakuda");
+            alert("PHP Obfuscator");
             return false;
         }
         document.oncontextmenu = _alert;
@@ -36,8 +36,7 @@
 </head>
 <body>
     <div class="heading">
-        <span style="color: white;">PHP Obfuscator By</span> 
-        <span style="color: red;">Mr.xBarakuda</span>
+        <span style="color: white;">PHP Obfuscator</span>
     </div>
     <div class="subheading">
         Obfuscates The Given PHP Code!
