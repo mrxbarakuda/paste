@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>PHP Code Obfuscator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script>
+        function _alert() {
+            alert("PHP Obfuscator By Mr.xBarakuda");
+            return false;
+        }
+        document.oncontextmenu = _alert;
+    </script>
+    <style>
+        body { background-color: #080510; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        a { color: red; text-decoration: none; }
+        a:hover { color: teal; }
+        .heading { text-align: center; font-size: 300%; font-weight: bold; margin-top: 5vh; font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; }
+        .subheading { margin-top: 2vh; color: lawngreen; font-size: 150%; text-align: center; text-transform: capitalize; }
+        .input-container { margin-top: 5vh; text-align: center; }
+        .footer { text-align: center; font-size: 1.2rem; color: white; position: fixed; bottom: 2vh; left: 0; right: 0; }
+        textarea, input, select {
+            color: white;
+            font-size: 1rem;
+            padding: 10px;
+            border: 2px groove #333;
+            background-color: #1a1a1a;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        textarea { width: 80%; max-width: 800px; }
+        input[type="submit"] { cursor: pointer; background-color: #333; transition: background 0.3s; }
+        input[type="submit"]:hover { background-color: #444; }
+        .result-container { margin-top: 30px; }
+    </style>
+</head>
+<body>
+    <div class="heading">
+        <span style="color: white;">PHP Obfuscator By</span> 
+        <span style="color: red;">Mr.xBarakuda</span>
+    </div>
+    <div class="subheading">
+        Obfuscates The Given PHP Code!
+    </div>
+    <div class="input-container">
+        <form action="" method="POST">
+            <textarea rows="10" name="php" placeholder="Input PHP Code Here" required><?php echo isset($_POST['php']) ? htmlspecialchars($_POST['php']) : ''; ?></textarea><br>
+            <select name="option">
+                <option value="Weak">Weak Obfuscation</option>
+                <option value="Medium">Medium Level Obfuscation</option>
+                <option value="Strong">Strong Obfuscation</option>
+                <option value="High">High Level Obfuscation</option>
+            </select><br>
+            <input type="submit" name="submit" value="Obfuscate Now" />
+        </form>
+
+        <?php
+        if (isset($_POST['submit']) && !empty($_POST['php'])) {
+            $phpcode = $_POST['php'];
+            $option = $_POST['option'];
+
+            // Compression helpers
+            $obfuscate_low = strrev(base64_encode(gzdeflate(gzcompress($phpcode))));
+            $obfuscate_medium = strrev(base64_encode(gzdeflate(gzdeflate(gzcompress($phpcode)))));
+            $obfuscate_strong = strrev(base64_encode(gzdeflate(gzdeflate(gzdeflate(gzcompress(gzcompress($phpcode)))))));
+            
+            // High level multi-pass
+            $high_level = $phpcode;
+            $high_level = str_rot13($high_level);
+            for ($i = 0; $i < 4; $i++) {
+                $high_level = gzdeflate($high_level);
+                $high_level = gzcompress($high_level);
+            }
+            $high_level = strrev(base64_encode($high_level));
+
+            // Escaping replacements
+            $replacements = array(
+                'a' => '\x61', 'A' => '\x41', 'b' => '\x62', 'B' => '\x42',
+                'c' => '\x63', 'C' => '\x43', '=' => '\x3d', '+' => '\x2b'
+            );
+            $high_level_escaped = strtr($high_level, $replacements);
+
+            $kudax = "";
+            $gans = "";
+
+            switch ($option) {
+                case 'Weak':
+                    $kudax = "Sy1LzNFQt7dT10uvKs1Lzs8tKEotLtZIr8rMS8tJLEnVSEosTjUziU9JT\x635PSdUoLikqSi3TUElPz\x43vW\x42\x41Fr\x41\x41\x3d\x3d";
+                    $gans = $obfuscate_low;
+                    break;
+                case 'Medium':
+                    $kudax = "Sy1LzNFQt7dT10uvKs1Lzs8tKEotLtZIr8rMS8tJLElFYiUlFqe\x61m\x63Snp\x43bnp6RqFJ\x63UF\x61WW\x61\x61ikJ+YV\x614K\x42NQ\x41\x3d";
+                    $gans = $obfuscate_medium;
+                    break;
+                case 'Strong':
+                    $kudax = "Sy1LzNFQsrdT0kuvKs1Lzs8tKEotLtZ\x4142TmpeUklqRiZSUlFqe\x61m\x63Snp\x43bnp6RqFJ\x63UF\x61WW\x61\x61ikJ+YV\x610K\x42NQ\x41\x3d";
+                    $gans = $obfuscate_strong;
+                    break;
+                case 'High':
+                    $kudax = "Sy1LzNFQsrdT0isuKYovyi8xNNZIr8rMS8tJLEkFskrzkvNz\x434pSi4upI5yUWJxqZhKfkpq\x63n5Kq\x41bSzKLVMQyU9Ma9YEwlY\x41w\x41\x3d";
+                    $gans = $high_level_escaped;
+                    break;
+            }
+
+            if ($kudax && $gans) {
+                echo '<div class="result-container">';
+                echo '<h3 style="color: lawngreen;">Result:</h3>';
+                echo '<textarea rows="10" readonly>';
+                echo "<?php\n";
+                echo "\$kudax = \"$kudax\";\n";
+                echo "\$gans = \"$gans\";\n";
+                echo "eval(htmlspecialchars_decode(gzinflate(base64_decode(\$kudax))));\n";
+                echo "?>";
+                echo '</textarea>';
+                echo '</div>';
+            }
+        }
+        ?>
+    </div>
+    <div class="footer">
+        Developed By <span style="color: red;">Mr.xBarakuda</span>
+    </div>
+</body>
+</html>
