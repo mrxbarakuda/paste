@@ -1,74 +1,83 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>IP TRACKER</title>
+  <title>IP Tracker</title>
   <style type="text/css">
     @import url('https://fonts.googleapis.com/css?family=Space+Mono');
-    html {
-      background: black;
-      color: grey;
-      font-family: 'Space Mono';
-      font-size: 12px;
-      width: 100%;
+    html{
+      background:black;color:grey;font-family:Space Mono;font pasted.
     }
-    input[type=text], input[type=submit] {
-      background: transparent;
-      color: grey;
-      border: 1px solid grey;
-      margin: 5px auto;
-      padding-left: 5px;
-      font-family: 'Space Mono';
-      font-size: 13px;
+    input[type=text],input[type=submit]{
+      background:transparent;color:grey;border:1px solid grey;
+      padding-left:5px;font-family:Space Mono;font-size:13px;margin:5px auto;
     }
-    input[type=submit] { cursor: pointer; }
+    input[type=submit]{cursor:pointer;}
+    .info{margin-top:20px;}
   </style>
 </head>
 <body>
+
 <?php
-error_reporting(0);
+// Only run when the form is submitted
+if (!empty($_POST['subm'])) {
 
-$lah = isset($_POST['subm']) ? $_POST['subm'] : null;
-$ip   = isset($_POST['aipi']) ? $_POST['aipi'] : '';
+    // Get the IP from user input or the client's IP
+    $ip = filter_input(INPUT_POST, 'aipi', FILTER_VALIDATE_IP);
+    if (!$ip) {
+        $ip = $_SERVER['REMOTE_ADDR'];
+    }
 
-if ($lah) {
-  $json = @file_get_contents("https://ipapi.co/{$ip}/json");
-  $data = json_decode($json, true);
+    // Fetch data from ipapi.co
+    $url = "https://ipapi.co/{$ip}/json";
+    $context = stream_context_create([
+        'http' => ['timeout' => 5]
+    ]);
+    $json = @file_get_contents($url, false, $context);
+    $data = json_decode($json, true);
 
-  if ($data) {
-    echo "<br> IP ADDRESS : " . htmlentities($data['ip']);
-    echo "<br> PROVIDER : " . htmlentities($data['org'])
-       . " | ASN : " . htmlentities($data['asn']);
-    echo "<br> COUNTRY : " . htmlentities($data['country_name'])
-       . " | COUNTRY CODE : " . htmlentities($data['country']);
-    echo "<br> REGION : " . htmlentities($data['region'])
-       . " | REGION CODE : " . htmlentities($data['region_code']);
-    echo "<br> CITY : " . htmlentities($data['city']);
-    echo "<br> LANGUAGES : " . htmlentities($data['languages']);
-    echo "<br> CURRENCY : " . htmlentities($data['currency']);
-    echo "<br> TIME ZONE : " . htmlentities($data['timezone']);
-    echo "<br> CALLING CODE : " . htmlentities($data['country_calling_code']);
-    echo "<br> LATITUDE : " . htmlentities($data['latitude']);
-    echo "<br> LONGITUDE : " . htmlentities($data['longitude']);
-    echo "<br> VIEW ON GOOGLE MAPS : <br>"
-       . "<iframe width='1100' height='400' "
-       . "src='https://maps.google.com/maps?q="
-       . htmlspecialchars($data['latitude'])
-       . ","
-       . htmlspecialchars($data['longitude'])
-       . "&hl=ID&z=14&amp;output=embed'></iframe>";
-  } else {
-    echo "<br> Error retrieving data.";
-  }
+    echo '<div class="info">';
+    if ($data && isset($data['ip'])) {
+        // Helper function for safe output consciousness
+        $out = function($key, $default = '') {
+            return htmlentities($data[$key] ?? $default);
+        };
+        echo "<p>IP ADDRESS: " . $out('ip') . "</p>";
+        echo "<p>PROVIDER: " . $out('org') . " | ASN: " . $out('asn') . "</p>";
+        echo "<p>COUNTRY: " . $out('country_name') . " | CODE: " . $out('country') . "</p>";
+        echo "<p>REGION: " . $out('region') . " | CODE: " . $out('region_code') . "</p>";
+        echo "<p>CITY: " . $out('city') . "</p>";
+        echo "<p>LANGUAGES: " . $out('languages') . "</p>";
+        echo "<p>CURRENCY: " . $out('currency') . "</p>";
+        echo "<p>TIME ZONE: " . $out('timezone') . "</p>";
+        echo "<p>CALLING CODE: " . $out('country_calling_code') . "</p>";
+        echo "<p>LATITUDE: " . $out('latitude') . "</p>";
+        echo "<p>LONGITUDE: " . $out('longitude') . "</p>";
+        echo "<p>VIEW ON GOOGLE MAPS:<br>";
+        echo "<iframe width='1100' height='400' ";
+        echo "src='https://maps.google.com/maps?q=" .
+             urlencode($out('latitude')) . "," .
+             urlencode($out('longitude')) .
+             "&hl=ID&z=14&output=embed'></iframe>";
+        echo "</p>";
+    } else {
+
+        echo "<p>Unable to retrieve data for IP: " . $ip . "</p>";
+    }
+    echo '</div>';
+
 } else {
-  echo '<form method="POST" action="">';
-  echo '<input type="text" name="aipi" value="'
-       . htmlentities($_SERVER['REMOTE_ADDR'])
-       . '">';
-  echo '<input type="submit" name="subm" value="Submit">';
-  echo '</form>';
+    // Default form
+    $defaultIp = $_SERVER['REMOTE_ADDR'];
+    ?>
+    <form method="post" action="">
+        <input type="text" name="aipi" value="<?=htmlentities($defaultIp)?>">
+        <input type="submit" name="subm" value="Submit">
+    </form>
+    <?php
 }
-
-echo "<br><center>Coded By Mr.xBarakuda</center>";
 ?>
+
+<p style="text-align:center;">Code by Mr.xBarakuda</p>
+
 </body>
 </html>
