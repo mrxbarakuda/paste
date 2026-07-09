@@ -1,0 +1,219 @@
+<?php
+@ini_set("display_errors", 0);
+@ini_set("output_buffering", 0);
+function hex_escape_encode($str) {
+    $encoded = '';
+    for ($i = 0; $i < strlen($str); $i++) {
+        $encoded .= '\x' . bin2hex($str[$i]);
+    }
+    return $encoded;
+}
+function hex_escape_decode($str) {
+    $decoded = '';
+    $parts = explode('\x', $str);
+    foreach ($parts as $part) {
+        if (strlen($part) == 2 && ctype_xdigit($part)) {
+            $decoded .= hex2bin($part);
+        } elseif (!empty($part)) {
+ 
+            $decoded .= $part;
+        }
+    }
+    return $decoded;
+}
+$text = $_POST["code"] ?? "";
+$output = "";
+$selected_method = $_POST["kuds"] ?? "";
+$action = "";
+
+if (isset($_POST["encd"])) {
+    $action = "encode";
+} elseif (isset($_POST["decd"])) {
+    $action = "decode";
+}
+
+?>
+<html>
+<head>
+    <title>EN/DEcode</title>
+    <style type="text/css">
+        @import url('http://fonts.googleapis.com/css?family=Ubuntu+Condensed');
+        html {
+            background: #111111;
+            color: #ffffff;
+            font-family: 'Ubuntu Condensed';
+            font-size: 13px;
+            width: 100%;
+        }
+        input[type=submit] {
+            background: #191919;
+            color: #ffffff;
+            border: 1px solid #ffffff;
+            margin: 5px auto;
+            padding-left: 5px;
+            font-family: 'Ubuntu Condensed';
+            font-size: 13px;
+            cursor: pointer;
+        }
+        textarea {
+            border: 3px dotted deepskyblue;
+            width: 100%;
+            height: 400px;
+            padding-left: 5px;
+            margin: 10px auto;
+            resize: none;
+            background: transparent;
+            color: #ffffff;
+            font-family: 'Ubuntu Condensed';
+            font-size: 13px;
+        }
+        .footer {
+            text-align: center;
+            font: 25px Ubuntu Condensed;
+            color: white;
+            position: fixed;
+            bottom: 0vh;
+            left: 0vh;
+            right: 0vh;
+        }
+        a {
+            text-decoration: none;
+        }
+        a:hover {
+            color: #F6D155;
+            text-decoration: underline;
+        }
+</style>
+</head>
+<body>
+<center><h1>[ Encode/Decode ]</h1>
+    <form method="post">
+        <textarea cols="60" rows="10" name="code" placeholder="input..."><?php echo htmlspecialchars($text); ?></textarea>
+        <br><br>
+        <select size="1" name="kuds">
+            <option value="urlencode" <?php echo ($selected_method == "urlencode") ? "selected" : ""; ?>>URL</option>
+            <option value="base64" <?php echo ($selected_method == "base64") ? "selected" : ""; ?>>Base64</option>
+            <option value="convert_uu" <?php echo ($selected_method == "convert_uu") ? "selected" : ""; ?>>Convert_UU</option>
+            <option value="json" <?php echo ($selected_method == "json") ? "selected" : ""; ?>>JSON</option>
+            <option value="gzinflate_base64" <?php echo ($selected_method == "gzinflate_base64") ? "selected" : ""; ?>>Gzinflate - Base64</option>
+            <option value="str_rot13_base64" <?php echo ($selected_method == "str_rot13_base64") ? "selected" : ""; ?>>Str_rot13 - Base64</option>
+            <option value="str_rot13_gzinflate_base64" <?php echo ($selected_method == "str_rot13_gzinflate_base64") ? "selected" : ""; ?>>Str_rot13 - Gzinflate - Base64</option>
+            <option value="gzinflate_str_rot13_base64" <?php echo ($selected_method == "gzinflate_str_rot13_base64") ? "selected" : ""; ?>>Gzinflate - Str_rot13 - Base64</option>
+            <option value="gzinflate_str_rot13_gzinflate_base64" <?php echo ($selected_method == "gzinflate_str_rot13_gzinflate_base64") ? "selected" : ""; ?>>Gzinflate - Str_rot13 - Gzinflate - Base64</option>
+            <option value="complex_chain_1" <?php echo ($selected_method == "complex_chain_1") ? "selected" : ""; ?>>Str_rot13 - Gzinflate - Str_rot13 - Base64</option>
+            <option value="complex_chain_2" <?php echo ($selected_method == "complex_chain_2") ? "selected" : ""; ?>>Base64 - Gzinflate - Str_rot13 - Convert_UU - Gzinflate - Base64</option>
+            <option value="complex_chain_3" <?php echo ($selected_method == "complex_chain_3") ? "selected" : ""; ?>>Str_rot13 - URL - Convert_UU - Gzinflate - Str_rot13 - Base64 - Convert_UU - Gzinflate - URL - Str_rot13 - Gzinflate - Base64</option>
+            <option value="hex" <?php echo ($selected_method == "hex") ? "selected" : ""; ?>>Hex</option>
+            <option value="hex_escaping" <?php echo ($selected_method == "hex_escaping") ? "selected" : ""; ?>>Hex Escaping</option>
+            <option value="str_rot13" <?php echo ($selected_method == "str_rot13") ? "selected" : ""; ?>>ROT13 Hash</option>
+            <option value="htmlspecialchars" <?php echo ($selected_method == "htmlspecialchars") ? "selected" : ""; ?>>HTML Special Chars</option>
+            <option value="addslashes" <?php echo ($selected_method == "addslashes") ? "selected" : ""; ?>>Add Slashes</option>
+            <!-- Opsi berikut tidak memiliki fungsi decode langsung yang reversibel atau merupakan fungsi informasi -->
+            <option value="strlen" <?php echo ($selected_method == "strlen") ? "selected" : ""; ?>>Strlen (Informasi)</option>
+            <option value="chr" <?php echo ($selected_method == "chr") ? "selected" : ""; ?>>Chr (Transformasi)</option>
+            <option value="bin2hex_strlen" <?php echo ($selected_method == "bin2hex_strlen") ? "selected" : ""; ?>>Bin2hex & Strlen (Informasi)</option>
+            <option value="htmlentities_utf8_decode" <?php echo ($selected_method == "htmlentities_utf8_decode") ? "selected" : ""; ?>>HTML Entities & UTF8 Decode (Transformasi)</option>
+            <option value="chr_bin2hex_substr" <?php echo ($selected_method == "chr_bin2hex_substr") ? "selected" : ""; ?>>Chr - Bin2hex - Substr (Transformasi)</option>
+        </select>
+        &nbsp;
+        <input type="submit" name="encd" value="Encode">
+        <input type="submit" name="decd" value="Decode">
+    </form>
+</center>
+<br>
+
+<?php
+
+if (!empty($action) && !empty($text)) {
+    switch ($selected_method) {
+        case 'urlencode':
+            $output = ($action == 'encode') ? rawurlencode($text) : rawurldecode($text);
+            break;
+        case 'base64':
+            $output = ($action == 'encode') ? base64_encode($text) : base64_decode($text);
+            break;
+        case 'convert_uu':
+            $output = ($action == 'encode') ? convert_uuencode($text) : convert_uudecode($text);
+            break;
+        case 'json':
+            $output = ($action == 'encode') ? json_encode($text) : json_decode($text);
+            break;
+        case 'gzinflate_base64':
+            $output = ($action == 'encode') ? base64_encode(gzdeflate($text)) : gzinflate(base64_decode($text));
+            break;
+        case 'str_rot13_base64':
+            $output = ($action == 'encode') ? base64_encode(str_rot13($text)) : str_rot13(base64_decode($text));
+            break;
+        case 'str_rot13_gzinflate_base64':
+            $output = ($action == 'encode') ? base64_encode(gzdeflate(str_rot13($text))) : str_rot13(gzinflate(base64_decode($text)));
+            break;
+        case 'gzinflate_str_rot13_base64':
+            $output = ($action == 'encode') ? base64_encode(str_rot13(gzdeflate($text))) : gzinflate(str_rot13(base64_decode($text)));
+            break;
+        case 'gzinflate_str_rot13_gzinflate_base64':
+            $output = ($action == 'encode') ? base64_encode(gzdeflate(str_rot13(gzdeflate($text)))) : gzinflate(str_rot13(gzinflate(base64_decode($text))));
+            break;
+        case 'complex_chain_1':
+            $output = ($action == 'encode') ? base64_encode(str_rot13(gzdeflate(str_rot13($text)))) : str_rot13(gzinflate(str_rot13(base64_decode($text))));
+            break;
+        case 'complex_chain_2':
+            if ($action == 'encode') {
+                $output = base64_encode(gzdeflate(convert_uuencode(str_rot13(gzdeflate(base64_encode($text))))));
+            } else {
+                $output = base64_decode(gzinflate(str_rot13(convert_uudecode(gzinflate(base64_decode($text))))));
+            }
+            break;
+        case 'complex_chain_3':
+            if ($action == 'encode') {
+                $output = base64_encode(gzdeflate(str_rot13(rawurlencode(gzdeflate(convert_uuencode(base64_encode(str_rot13(gzdeflate(convert_uuencode(rawurlencode(str_rot13($text))))))))))));
+            } else {
+                $output = str_rot13(rawurldecode(convert_uudecode(gzinflate(str_rot13(base64_decode(convert_uudecode(gzinflate(rawurldecode(str_rot13(gzinflate(base64_decode($text))))))))))));
+            }
+            break;
+case 'hex':
+                $output = ($action == 'encode') ? bin2hex($text) : hex2bin($text);
+                break;
+            case 'hex_escaping':
+                $output = ($action == 'encode') ? hex_escape_encode($text) : hex_escape_decode($text);
+                break;
+        case 'str_rot13':
+            $output = str_rot13($text);
+            break;
+        case 'htmlspecialchars':
+            $output = ($action == 'encode') ? htmlspecialchars($text) : htmlspecialchars_decode($text);
+            break;
+        case 'addslashes':
+            $output = ($action == 'encode') ? addslashes($text) : stripslashes($text);
+            break;
+        case 'strlen':
+            $output = "Panjang string: " . strlen($text);
+            break;
+        case 'bin2hex_strlen':
+            $output = "Panjang hex dari bin2hex: " . strlen(bin2hex($text));
+            break;
+        case 'chr':
+            $output = "Fungsi chr: " . @chr((int)$text);
+            break;
+        case 'htmlentities_utf8_decode':
+            $output = "HTML Entities & UTF8 Decode: " . htmlentities(utf8_decode($text));
+            break;
+        case 'chr_bin2hex_substr':
+            $output = "Transformasi kompleks (tidak reversibel): " . "Tidak dapat didecode secara langsung.";
+            break;
+        default:
+            $output = "Metode tidak dikenal atau tidak ada aksi yang dipilih.";
+            break;
+    }
+
+    if (is_array($output) || is_object($output)) {
+        $output = print_r($output, true);
+    }
+}
+?>
+<textarea cols="60" rows="10" placeholder="output..."><?php echo htmlspecialchars($output); ?></textarea>
+<div class="footer">
+    <font>Coded by <a href="https://google.com/search?q=intext:Mr.xBarakuda" target="_blank"><span style="color: red;">Mr.xBarakuda</span></a>
+    </font>
+</div>
+</body>
+</html>
