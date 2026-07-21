@@ -5,7 +5,7 @@
   <style type="text/css">
     @import url('https://fonts.googleapis.com/css?family=Space+Mono');
     html{
-      background:black;color:grey;font-family:Space Mono;font pasted.
+      background:black;color:grey;font-family:Space Mono;font-size:14px;
     }
     input[type=text],input[type=submit]{
       background:transparent;color:grey;border:1px solid grey;
@@ -18,31 +18,157 @@
 <body>
 
 <?php
-// Only run when the form is submitted
+// ============================================================
+// IP Tracker - Code by Mr.xBarakuda
+// Uses multiple API sources with fallback for reliability
+// ============================================================
+function fetchJson($url, $timeout = 10) {
+    $context = stream_context_create([
+        'http' => [
+            'timeout' => $timeout,
+            'method'  => 'GET',
+            'header'  => 'User-Agent: Mozilla/5.0 (compatible; IPTracker/1.0)',
+            'ignore_errors' => true,
+        ]
+    ]);
+    $response = @file_get_contents($url, false, $context);
+    if ($response === false) return null;
+    $decoded = json_decode($response, true);
+    return $decoded;
+}
+
+function mapIpApi($data) {
+    if (!$data || (isset($data['status']) && $data['status'] === 'fail')) return null;
+    return [
+        'ip'                   => $data['query'] ?? '',
+        'org'                  => ($data['as'] ?? '') . ' | ' . ($data['isp'] ?? ''),
+        'asn'                  => $data['as'] ?? '',
+        'country_name'         => $data['country'] ?? '',
+        'country'              => $data['countryCode'] ?? '',
+        'region'               => $data['regionName'] ?? '',
+        'region_code'          => $data['region'] ?? '',
+        'city'                 => $data['city'] ?? '',
+        'languages'            => '',
+        'currency'             => '',
+        'timezone'             => $data['timezone'] ?? '',
+        'country_calling_code' => '',
+        'latitude'             => $data['lat'] ?? '',
+        'longitude'            => $data['lon'] ?? '',
+    ];
+}
+
+function mapFreeIpApi($data) {
+    if (!$data) return null;
+    return [
+        'ip'                   => $data['ipAddress'] ?? '',
+        'org'                  => ($data['isp'] ?? '') . ' | ' . ($data['asn'] ?? ''),
+        'asn'                  => $data['asn'] ?? '',
+        'country_name'         => $data['countryName'] ?? '',
+        'country'              => $data['countryCode'] ?? '',
+        'region'               => $data['regionName'] ?? '',
+        'region_code'          => $data['regionCode'] ?? '',
+        'city'                 => $data['cityName'] ?? '',
+        'languages'            => $data['languages'] ?? '',
+        'currency'             => $data['currency'] ?? '',
+        'timezone'             => $data['timeZone'] ?? '',
+        'country_calling_code' => $data['countryCallingCode'] ?? '',
+        'latitude'             => $data['latitude'] ?? '',
+        'longitude'            => $data['longitude'] ?? '',
+    ];
+}
+
+function mapIpApiIs($data) {
+    if (!$data || isset($data['error'])) return null;
+    return [
+        'ip'                   => $data['ip'] ?? '',
+        'org'                  => ($data['organization']['isp'] ?? '') . ' | ' . ($data['organization']['as'] ?? ''),
+        'asn'                  => $data['organization']['as'] ?? '',
+        'country_name'         => $data['location']['country'] ?? '',
+        'country'              => $data['location']['country_code'] ?? '',
+        'region'               => $data['location']['region'] ?? '',
+        'region_code'          => $data['location']['region_code'] ?? '',
+        'city'                 => $data['location']['city'] ?? '',
+        'languages'            => implode(',', $data['location']['languages'] ?? []),
+        'currency'             => $data['location']['currency'] ?? '',
+        'timezone'             => $data['location']['timezone'] ?? '',
+        'country_calling_code' => $data['location']['country_calling_code'] ?? '',
+        'latitude'             => $data['location']['latitude'] ?? '',
+        'longitude'            => $data['location']['longitude'] ?? '',
+    ];
+}
+
+function mapIpApiCo($data) {
+    if (!$data || isset($data['error'])) return null;
+    return [
+        'ip'                   => $data['ip'] ?? '',
+        'org'                  => $data['org'] ?? '',
+        'asn'                  => $data['asn'] ?? '',
+        'country_name'         => $data['country_name'] ?? '',
+        'country'              => $data['country'] ?? '',
+        'region'               => $data['region'] ?? '',
+        'region_code'          => $data['region_code'] ?? '',
+        'city'                 => $data['city'] ?? '',
+        'languages'            => $data['languages'] ?? '',
+        'currency'             => $data['currency'] ?? '',
+        'timezone'             => $data['timezone'] ?? '',
+        'country_calling_code' => $data['country_calling_code'] ?? '',
+        'latitude'             => $data['latitude'] ?? '',
+        'longitude'            => $data['longitude'] ?? '',
+    ];
+}
+
 if (!empty($_POST['subm'])) {
 
-    // Get the IP from user input or the client's IP
     $ip = filter_input(INPUT_POST, 'aipi', FILTER_VALIDATE_IP);
     if (!$ip) {
         $ip = $_SERVER['REMOTE_ADDR'];
     }
 
-    // Fetch data from ipapi.co
-    $url = "https://ipapi.co/{$ip}/json";
-    $context = stream_context_create([
-        'http' => ['timeout' => 5]
-    ]);
-    $json = @file_get_contents($url, false, $context);
-    $data = json_decode($json, true);
+    $data = null;
+
+    $apis = [
+
+        [
+            'url'   => "http://ip-api.com/json/{$ip}?fields=status,message,country,countryCode,region,regionName,city,lat,lon,timezone,isp,as,query",
+            'map'   => 'mapIpApi',
+        ],
+
+        [
+            'url'   => "https://freeipapi.com/api/json/{$ip}",
+            'map'   => 'mapFreeIpApi',
+        ],
+
+        [
+            'url'   => "https://ipapi.is/json/?ip={$ip}",
+            'map'   => 'mapIpApiIs',
+        ],
+
+        [
+            'url'   => "https://ipapi.co/{$ip}/json/",
+            'map'   => 'mapIpApiCo',
+        ],
+    ];
+
+    foreach ($apis as $api) {
+        $raw = fetchJson($api['url']);
+        if ($raw !== null) {
+            $mapped = $api['map']($raw);
+            if ($mapped && !empty($mapped['ip'])) {
+                $data = $mapped;
+                break;
+            }
+        }
+    }
 
     echo '<div class="info">';
     if ($data && isset($data['ip'])) {
-        // Helper function for safe output consciousness
-        $out = function($key, $default = '') {
+
+        $out = function($key, $default = '') use ($data) {
             return htmlentities($data[$key] ?? $default);
         };
         echo "<p>IP ADDRESS: " . $out('ip') . "</p>";
-        echo "<p>PROVIDER: " . $out('org') . " | ASN: " . $out('asn') . "</p>";
+        echo "<p>PROVIDER: " . $out('org') . "</p>";
+        echo "<p>ASN: " . $out('asn') . "</p>";
         echo "<p>COUNTRY: " . $out('country_name') . " | CODE: " . $out('country') . "</p>";
         echo "<p>REGION: " . $out('region') . " | CODE: " . $out('region_code') . "</p>";
         echo "<p>CITY: " . $out('city') . "</p>";
@@ -52,21 +178,20 @@ if (!empty($_POST['subm'])) {
         echo "<p>CALLING CODE: " . $out('country_calling_code') . "</p>";
         echo "<p>LATITUDE: " . $out('latitude') . "</p>";
         echo "<p>LONGITUDE: " . $out('longitude') . "</p>";
+        $lat = urlencode($out('latitude'));
+        $lng = urlencode($out('longitude'));
         echo "<p>VIEW ON GOOGLE MAPS:<br>";
         echo "<iframe width='1100' height='400' ";
-        echo "src='https://maps.google.com/maps?q=" .
-             urlencode($out('latitude')) . "," .
-             urlencode($out('longitude')) .
-             "&hl=ID&z=14&output=embed'></iframe>";
+        echo "src='https://maps.google.com/maps?q={$lat},{$lng}&hl=ID&z=14&output=embed'></iframe>";
         echo "</p>";
     } else {
-
-        echo "<p>Unable to retrieve data for IP: " . $ip . "</p>";
+        echo "<p>Unable to retrieve data for IP: " . htmlspecialchars($ip) . "</p>";
+        echo "<p>Please check that the IP is valid and not a private/local address.</p>";
     }
     echo '</div>';
 
 } else {
-    // Default form
+
     $defaultIp = $_SERVER['REMOTE_ADDR'];
     ?>
     <form method="post" action="">
