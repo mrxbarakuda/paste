@@ -1,18 +1,343 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>IP Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style type="text/css">
-    @import url('https://fonts.googleapis.com/css?family=Space+Mono');
-    html{
-      background:black;color:grey;font-family:Space Mono;font-size:14px;
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-    input[type=text],input[type=submit]{
-      background:transparent;color:grey;border:1px solid grey;
-      padding-left:5px;font-family:Space Mono;font-size:13px;margin:5px auto;
+
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-card: #12121a;
+      --bg-card-hover: #1a1a2e;
+      --bg-input: #1a1a2e;
+      --border-color: #2a2a3e;
+      --accent: #6c63ff;
+      --accent-hover: #5a52d5;
+      --accent-glow: rgba(108, 99, 255, 0.3);
+      --text-primary: #e8e8f0;
+      --text-secondary: #8888a8;
+      --text-muted: #555570;
+      --success: #22c55e;
+      --error: #ef4444;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+      --shadow-glow: 0 0 30px rgba(108, 99, 255, 0.15);
+      --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    input[type=submit]{cursor:pointer;}
-    .info{margin-top:20px;}
+
+    html {
+      font-size: 16px;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      line-height: 1.6;
+    }
+
+    /* Animated background gradient */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 30% 20%, rgba(108, 99, 255, 0.08) 0%, transparent 50%),
+                  radial-gradient(circle at 70% 80%, rgba(99, 200, 255, 0.06) 0%, transparent 50%);
+      z-index: -1;
+      animation: bgShift 20s ease-in-out infinite alternate;
+    }
+
+    @keyframes bgShift {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(-5%, -5%); }
+    }
+
+    /* Container */
+    .container {
+      width: 100%;
+      max-width: 700px;
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .header h1 {
+      font-family: 'Space Mono', monospace;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .header h1 span {
+      color: var(--accent);
+    }
+
+    .header p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      font-weight: 300;
+    }
+
+    /* Card */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: var(--shadow);
+      transition: box-shadow var(--transition);
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow), var(--shadow-glow);
+    }
+
+    /* Form */
+    .form-group {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 4px;
+    }
+
+    .form-group input[type="text"] {
+      flex: 1;
+      background: var(--bg-input);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 14px 18px;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+
+    .form-group input[type="text"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .form-group input[type="text"]::placeholder {
+      color: var(--text-muted);
+    }
+
+    .form-group input[type="submit"] {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 14px 28px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+      white-space: nowrap;
+    }
+
+    .form-group input[type="submit"]:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px var(--accent-glow);
+    }
+
+    .form-group input[type="submit"]:active {
+      transform: translateY(0);
+    }
+
+    /* Info section */
+    .info {
+      margin-top: 0;
+    }
+
+    .info-title {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    /* Data grid */
+    .data-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .data-item {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      transition: border-color var(--transition), background var(--transition);
+    }
+
+    .data-item:hover {
+      border-color: rgba(108, 99, 255, 0.4);
+      background: var(--bg-card-hover);
+    }
+
+    .data-item.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .data-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+
+    .data-value {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.95rem;
+      color: var(--text-primary);
+      word-break: break-word;
+    }
+
+    /* Map section */
+    .map-section {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .map-section .data-label {
+      margin-bottom: 12px;
+    }
+
+    .map-container {
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+    }
+
+    .map-container iframe {
+      width: 100%;
+      height: 320px;
+      border: none;
+      display: block;
+      filter: grayscale(0.5) contrast(1.1);
+      transition: filter var(--transition);
+    }
+
+    .map-container iframe:hover {
+      filter: grayscale(0) contrast(1);
+    }
+
+    /* Error state */
+    .error-box {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      text-align: center;
+    }
+
+    .error-box .data-label {
+      color: var(--error);
+      margin-bottom: 8px;
+    }
+
+    .error-box .data-value {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-family: 'Space Mono', monospace;
+    }
+
+    .footer a {
+      color: var(--accent);
+      text-decoration: none;
+      transition: color var(--transition);
+    }
+
+    .footer a:hover {
+      color: var(--accent-hover);
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .header h1 {
+        font-size: 1.5rem;
+      }
+
+      .card {
+        padding: 20px;
+      }
+
+      .form-group {
+        flex-direction: column;
+      }
+
+      .form-group input[type="submit"] {
+        padding: 14px;
+      }
+
+      .data-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .map-container iframe {
+        height: 250px;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .header h1 {
+        font-size: 1.3rem;
+      }
+
+      .card {
+        padding: 16px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -20,7 +345,7 @@
 <?php
 // ============================================================
 // IP Tracker - Code by Mr.xBarakuda
-// Uses multiple API sources with fallback for reliability
+// Uses multiple API sources
 // ============================================================
 function fetchJson($url, $timeout = 10) {
     $context = stream_context_create([
@@ -127,22 +452,18 @@ if (!empty($_POST['subm'])) {
     $data = null;
 
     $apis = [
-
         [
             'url'   => "http://ip-api.com/json/{$ip}?fields=status,message,country,countryCode,region,regionName,city,lat,lon,timezone,isp,as,query",
             'map'   => 'mapIpApi',
         ],
-
         [
             'url'   => "https://freeipapi.com/api/json/{$ip}",
             'map'   => 'mapFreeIpApi',
         ],
-
         [
             'url'   => "https://ipapi.is/json/?ip={$ip}",
             'map'   => 'mapIpApiIs',
         ],
-
         [
             'url'   => "https://ipapi.co/{$ip}/json/",
             'map'   => 'mapIpApiCo',
@@ -160,49 +481,86 @@ if (!empty($_POST['subm'])) {
         }
     }
 
-    echo '<div class="info">';
+    echo '<div class="container"><div class="card">';
+
     if ($data && isset($data['ip'])) {
 
         $out = function($key, $default = '') use ($data) {
             return htmlentities($data[$key] ?? $default);
         };
-        echo "<p>IP ADDRESS: " . $out('ip') . "</p>";
-        echo "<p>PROVIDER: " . $out('org') . "</p>";
-        echo "<p>ASN: " . $out('asn') . "</p>";
-        echo "<p>COUNTRY: " . $out('country_name') . " | CODE: " . $out('country') . "</p>";
-        echo "<p>REGION: " . $out('region') . " | CODE: " . $out('region_code') . "</p>";
-        echo "<p>CITY: " . $out('city') . "</p>";
-        echo "<p>LANGUAGES: " . $out('languages') . "</p>";
-        echo "<p>CURRENCY: " . $out('currency') . "</p>";
-        echo "<p>TIME ZONE: " . $out('timezone') . "</p>";
-        echo "<p>CALLING CODE: " . $out('country_calling_code') . "</p>";
-        echo "<p>LATITUDE: " . $out('latitude') . "</p>";
-        echo "<p>LONGITUDE: " . $out('longitude') . "</p>";
+
+        echo '<div class="info">';
+        echo '<div class="info-title">IP Lookup Result</div>';
+        echo '<div class="data-grid">';
+
+        echo '<div class="data-item"><div class="data-label">IP Address</div><div class="data-value">' . $out('ip') . '</div></div>';
+        echo '<div class="data-item"><div class="data-label">Provider / ASN</div><div class="data-value">' . $out('org') . '</div></div>';
+
+        echo '<div class="data-item"><div class="data-label">Country</div><div class="data-value">' . $out('country_name') . ' <span style="color:var(--text-muted)">(' . $out('country') . ')</span></div></div>';
+        echo '<div class="data-item"><div class="data-label">Region</div><div class="data-value">' . $out('region') . ' <span style="color:var(--text-muted)">(' . $out('region_code') . ')</span></div></div>';
+
+        echo '<div class="data-item"><div class="data-label">City</div><div class="data-value">' . $out('city') . '</div></div>';
+        echo '<div class="data-item"><div class="data-label">Time Zone</div><div class="data-value">' . $out('timezone') . '</div></div>';
+
+        echo '<div class="data-item"><div class="data-label">Currency</div><div class="data-value">' . $out('currency') . '</div></div>';
+        echo '<div class="data-item"><div class="data-label">Calling Code</div><div class="data-value">+' . $out('country_calling_code') . '</div></div>';
+
+        echo '<div class="data-item"><div class="data-label">Latitude</div><div class="data-value">' . $out('latitude') . '</div></div>';
+        echo '<div class="data-item"><div class="data-label">Longitude</div><div class="data-value">' . $out('longitude') . '</div></div>';
+
+        echo '<div class="data-item full-width"><div class="data-label">Languages</div><div class="data-value">' . $out('languages') . '</div></div>';
+
+        echo '</div>';
+
         $lat = urlencode($out('latitude'));
         $lng = urlencode($out('longitude'));
-        echo "<p>VIEW ON GOOGLE MAPS:<br>";
-        echo "<iframe width='1100' height='400' ";
-        echo "src='https://maps.google.com/maps?q={$lat},{$lng}&hl=ID&z=14&output=embed'></iframe>";
-        echo "</p>";
+
+        echo '<div class="map-section">';
+        echo '<div class="data-label">Location on Map</div>';
+        echo '<div class="map-container">';
+        echo "<iframe src='https://maps.google.com/maps?q={$lat},{$lng}&hl=ID&z=14&output=embed' allowfullscreen></iframe>";
+        echo '</div></div>';
+
+        echo '<div style="text-align:center;margin-top:20px;">';
+        echo '<a href="?" style="color:var(--accent);text-decoration:none;font-weight:600;font-size:0.9rem;transition:color 0.3s;" onmouseover="this.style.color=\'var(--accent-hover)\'" onmouseout="this.style.color=\'var(--accent)\'">&#8592; Look Up Another IP</a>';
+        echo '</div>';
+
+        echo '</div>';
+
     } else {
-        echo "<p>Unable to retrieve data for IP: " . htmlspecialchars($ip) . "</p>";
-        echo "<p>Please check that the IP is valid and not a private/local address.</p>";
+        echo '<div class="error-box">';
+        echo '<div class="data-label">Lookup Failed</div>';
+        echo '<div class="data-value">Unable to retrieve data for IP: ' . htmlspecialchars($ip) . '</div>';
+        echo '<div class="data-value" style="margin-top:6px;">Please check that the IP is valid and not a private/local address.</div>';
+        echo '</div>';
     }
+
+    echo '</div>';
+    echo '<div class="footer">Code by <a href="#">Mr.xBarakuda</a></div>';
     echo '</div>';
 
 } else {
 
     $defaultIp = $_SERVER['REMOTE_ADDR'];
     ?>
-    <form method="post" action="">
-        <input type="text" name="aipi" value="<?=htmlentities($defaultIp)?>">
-        <input type="submit" name="subm" value="Submit">
-    </form>
+    <div class="container">
+      <div class="header">
+        <h1>&gt; IP <span>Tracker</span></h1>
+        <p>Geolocate any IP address instantly</p>
+      </div>
+      <div class="card">
+        <form method="post" action="">
+          <div class="form-group">
+            <input type="text" name="aipi" value="<?=htmlentities($defaultIp)?>" placeholder="Enter an IP address..." autocomplete="off">
+            <input type="submit" name="subm" value="Track">
+          </div>
+        </form>
+      </div>
+      <div class="footer">Code by Mr.xBarakuda</div>
+    </div>
     <?php
 }
 ?>
-
-<p style="text-align:center;">Code by Mr.xBarakuda</p>
 
 </body>
 </html>
